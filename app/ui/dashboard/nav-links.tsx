@@ -8,6 +8,8 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { clsx } from 'clsx';
+import React, { useState, useEffect, useRef } from 'react';
+import { EyeIcon } from '@heroicons/react/24/outline'; 
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
@@ -23,6 +25,23 @@ const links = [
 
 export default function NavLinks() {
   const pathname = usePathname();
+  const [visitorCount, setVisitorCount] = useState(0); // Placeholder for visitor count
+  const [todayDate, setTodayDate] = useState('');
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      console.log('isMounted', isMounted.current)
+      setVisitorCount((visitorCount) => visitorCount + 1);
+    }
+    // Set today's date
+    setTodayDate(new Date().toLocaleDateString());
+
+    return() => {
+      isMounted.current = false;
+    }
+  }, []);
+
   return (
     <>
       {links.map((link) => {
@@ -43,6 +62,14 @@ export default function NavLinks() {
           </Link>
         );
       })}
+      <div className="mt-4 p-3 text-left flex justify-between">
+        <div>
+          {todayDate}
+        </div>
+        <div className="flex items-center">
+          <EyeIcon className="w-5 h-5 mr-2" /><span>{visitorCount}</span>
+        </div>
+      </div>
     </>
   );
 }
